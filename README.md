@@ -1,9 +1,12 @@
-# Deep complex-valued neural networks 
+# Deep Complex-Valued Neural Networks 
 
-Originally for baseband wireless signal processing. A follow-up research of my thesis.
+For baseband wireless signal processing. A follow-up research of my thesis.
+Can be used for other complex-valued (CV) signal processing.
+Based on PyTorch framework.
+Contributions are wellcomed.
 
 ## Objectives
-* Complex-valued (CV) convolutional layers
+* CV convolutional layers
 * Activation, pooling etc. layers for CV neural networks
 * Scaleable and rotatable convolutional layers
 
