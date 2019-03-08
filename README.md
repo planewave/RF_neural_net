@@ -11,6 +11,11 @@ Contributions are wellcomed.
 * Activation, pooling etc. layers for CV neural networks
 * Scaleable and rotatable convolutional layers
 
+## Current tasks
+- [x] CV-CNN layer building
+- [x] PSK, GFSK generator
+- [ ] PSK, GFSK signal classifier with both RV-CNN and CV-CNN
+
 ## Reference
 Paper for CV-CNN and more: [Deep Complex Networks](https://arxiv.org/abs/1705.09792)
 
@@ -23,5 +28,3 @@ Planning to use capsule net brought by Hinton
 2. 研究如何处理复数时间序列特有的相位, 和采样率问题
 
 欢迎交流合作
-
-Jonah.Kong@outlook.com
