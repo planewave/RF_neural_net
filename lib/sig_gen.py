@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def rrcosdesign(beta, span, sps):
     """
     returns the coefficients, that correspond to a square-root raised 
@@ -11,7 +12,7 @@ def rrcosdesign(beta, span, sps):
     """
     n = sps*span
     rrc = np.zeros(n, dtype=float)
-        
+
     for x in np.arange(n):
         t = (x-n/2)/sps
         if t == 0.0:
@@ -25,7 +26,6 @@ def rrcosdesign(beta, span, sps):
         else:
             rrc[x] = ((np.sin(np.pi*t*(1-beta))+4*beta*(t)*np.cos(np.pi*
                      t*(1+beta)))/(np.pi*t*(1-(4*beta*t)*(4*beta*t))))
-        
     return rrc
 
 
@@ -33,7 +33,7 @@ def gaussdesign(bt, span, sps):
     """
     Gaussian FIR Pulse-Shaping Filter Design
     converted from Matlab
-    
+
     pulse-shaping filter. BT is the 3-dB bandwidth-symbol time product,
     where B is the one-sided bandwidth in hertz and T is the symbol time in
     seconds. The filter is truncated to SPAN symbols and each symbol is
@@ -55,15 +55,14 @@ def upsample(x, sps, zeros=True):
     y = upsample(x,n) increases the sample rate of x by 
     inserting n – 1 zeros or same sample between samples.
     input is 1D numpy array
-    
     """
     zo = np.zeros((x.size, sps), dtype=x.dtype)
     if zeros:
-        zo[:,0] += x
+        zo[:, 0] += x
     else:
         zo += np.expand_dims(x, 1)
-            
     return zo.flatten()
+
 
 def psk_gen(symb=64, M=4, beta=0.4, span=4, sps=16):
     """
