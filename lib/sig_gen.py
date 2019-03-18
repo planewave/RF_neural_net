@@ -42,7 +42,7 @@ def gaussdesign(bt, span, sps):
     """
 
     filtLen = sps*span+1
-    t = np.linspace(-span/2,span/2,filtLen)
+    t = np.linspace(-span/2, span/2, filtLen)
     alpha = np.sqrt(np.log(2)/2)/(bt)
     h = (np.sqrt(np.pi)/alpha)*np.exp(-(t*np.pi/alpha)**2)
     h = h/np.sum(h)
@@ -52,7 +52,7 @@ def gaussdesign(bt, span, sps):
 def upsample(x, sps, zeros=True):
     """
     increase sample rate by integer factor
-    y = upsample(x,n) increases the sample rate of x by 
+    y = upsample(x,n) increases the sample rate of x by
     inserting n – 1 zeros or same sample between samples.
     input is 1D numpy array
     """
@@ -69,24 +69,25 @@ def psk_gen(symb=64, M=4, beta=0.4, span=4, sps=16):
     generate baseband PSK signal
     """
     rrc = rrcosdesign(beta, span, sps)
-    msg = np.random.randint(0, M, symb) 
+    msg = np.random.randint(0, M, symb)
     sig_mod = np.exp(1j*(np.pi/M+msg*(2*np.pi/M)))
     sig_up = upsample(sig_mod, sps)
     sig_pulse = np.convolve(sig_up, rrc)
     return sig_pulse[int(sps*span/2):int(1-sps*span/2)]
 
 
-def gfsk_gen(symb=64, bt=0.6, mi=0.5, span=4, sps=16):
+def gfsk_gen(symb=64, bt=0.5, mi=0.5, sps=16):
     """
     generate baseband GFSK signal
     bt: bandwidth time product
     mi: modulation index, phase change in one bit.
         when mi = 0.5 is MSK. 0.5 pi change per symbol
     """
-    gaus = gaussdesign(bt, span, sps)
+    gaus = gaussdesign(bt, 1, sps*2)
+    gaus = gaus[:-1]*sps
     msg = np.random.randint(0, 2, symb)
     freq = msg*2-1.0
-    freq = upsample(freq, sps, zeros=False)
+    freq = upsample(freq, sps)
     freq_gaus = np.convolve(freq, gaus)
     phase = np.zeros_like(freq_gaus)
     for idx in range(freq_gaus.size-1):
