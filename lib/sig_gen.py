@@ -43,8 +43,8 @@ def gaussdesign(bt, span, sps):
 
     filtLen = sps*span+1
     t = np.linspace(-span/2, span/2, filtLen)
-    alpha = np.sqrt(np.log(2)/2)/(bt)
-    h = (np.sqrt(np.pi)/alpha)*np.exp(-(t*np.pi/alpha)**2)
+    alpha = np.sqrt(np.log(2)/2) / (bt)
+    h = (np.sqrt(np.pi)/alpha) * np.exp(-(t*np.pi/alpha)**2)
     h = h/np.sum(h)
     return h
 
@@ -93,7 +93,7 @@ def gfsk_gen(symb=64, bt=0.5, mi=0.5, sps=16):
     for idx in range(freq_gaus.size-1):
         phase[idx+1] = phase[idx] + np.pi/sps*mi*freq_gaus[idx]
     sig = np.exp(1j*phase)
-    return sig[int(sps*span/2):int(-sps*span/2)]
+    return sig[int(sps/2):int(-sps/2)]
 
 if __name__ == '__main__':
     pass
