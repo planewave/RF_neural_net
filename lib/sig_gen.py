@@ -1,5 +1,5 @@
 import numpy as np
-
+from scipy.stats import norm
 
 def rrcosdesign(beta, span, sps):
     """
@@ -29,26 +29,6 @@ def rrcosdesign(beta, span, sps):
     return rrc
 
 
-def gaussdesign(bt, span, sps):
-    """
-    Gaussian FIR Pulse-Shaping Filter Design
-    converted from Matlab
-
-    pulse-shaping filter. BT is the 3-dB bandwidth-symbol time product,
-    where B is the one-sided bandwidth in hertz and T is the symbol time in
-    seconds. The filter is truncated to SPAN symbols and each symbol is
-    represented by SPS samples.
-    the filter order which is SPS*SPAN, must be even
-    """
-
-    filtLen = sps*span+1
-    t = np.linspace(-span/2, span/2, filtLen)
-    alpha = np.sqrt(np.log(2)/2) / (bt)
-    h = (np.sqrt(np.pi)/alpha) * np.exp(-(t*np.pi/alpha)**2)
-    h = h/np.sum(h)
-    return h
-
-
 def upsample(x, sps, zeros=True):
     """
     increase sample rate by integer factor
@@ -64,36 +44,45 @@ def upsample(x, sps, zeros=True):
     return zo.flatten()
 
 
-def psk_gen(symb=64, M=4, beta=0.4, span=4, sps=16):
+
+def gfsk_mod(msg, sps, bt, mi):
     """
-    generate baseband PSK signal
+    GFSK modulator
+    msg: binary message (0 or 1)
+    sps: sample per symbel 
+    bt: bandwidth time product
+    mi: modulation index, phase change in one bit.
+
+    the span of Gaussian filter is set to one
+    """
+    msg = msg*2-1.0
+    freq = upsample(msg, sps)
+    t = np.arange((-0.5+1/sps/2), 0.5, 1/sps) 
+    shape = norm.cdf(2*np.pi*bt*(t+0.5)/np.sqrt(np.log(2)))- \
+            norm.cdf(2*np.pi*bt*(t-0.5)/np.sqrt(np.log(2)))
+    shape = shape/shape.sum()
+    freq = np.convolve(freq, shape)
+    freq = freq[:msg.size*sps]
+    phase = np.zeros_like(freq)
+    for idx in range(freq.size-1):
+        phase[idx+1] = phase[idx] + mi*np.pi*freq[idx]
+    return np.exp(1j*phase)
+
+
+def psk_mod(msg, M, beta, span, sps):
+    """
+    PSK modulator
+    msg: message (0 to M-1), np.random.randint(0, M, symb)
+    M: modulation order
+    beta: rolloff factor of RRC filter
+    span: span of RRC filter
+    sps: sample per symbel
     """
     rrc = rrcosdesign(beta, span, sps)
-    msg = np.random.randint(0, M, symb)
     sig_mod = np.exp(1j*(np.pi/M+msg*(2*np.pi/M)))
     sig_up = upsample(sig_mod, sps)
     sig_pulse = np.convolve(sig_up, rrc)
     return sig_pulse[int(sps*span/2):int(1-sps*span/2)]
-
-
-def gfsk_gen(symb=64, bt=0.5, mi=0.5, sps=16):
-    """
-    generate baseband GFSK signal
-    bt: bandwidth time product
-    mi: modulation index, phase change in one bit.
-        when mi = 0.5 is MSK. 0.5 pi change per symbol
-    """
-    gaus = gaussdesign(bt, 1, sps*2)
-    gaus = gaus[:-1]*sps
-    msg = np.random.randint(0, 2, symb)
-    freq = msg*2-1.0
-    freq = upsample(freq, sps)
-    freq_gaus = np.convolve(freq, gaus)
-    phase = np.zeros_like(freq_gaus)
-    for idx in range(freq_gaus.size-1):
-        phase[idx+1] = phase[idx] + np.pi/sps*mi*freq_gaus[idx]
-    sig = np.exp(1j*phase)
-    return sig[int(sps/2):int(-sps/2)]
 
 if __name__ == '__main__':
     pass
