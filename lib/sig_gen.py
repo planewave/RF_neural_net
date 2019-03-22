@@ -1,5 +1,7 @@
 import numpy as np
-from scipy.stats import norm
+# from scipy.stats import norm
+import numba
+
 
 def rrcosdesign(beta, span, sps):
     """
@@ -29,6 +31,7 @@ def rrcosdesign(beta, span, sps):
     return rrc
 
 
+@numba.jit(nopython=True)
 def upsample(x, sps, zeros=True):
     """
     increase sample rate by integer factor
@@ -44,7 +47,13 @@ def upsample(x, sps, zeros=True):
     return zo.flatten()
 
 
+@numba.jit(nopython=True)
+def norm_cdf(x):
+    """http://web2.uwindsor.ca/math/hlynka/zogheibhlynka.pdf"""
+    return 0.5+(x+x**3/3+x**5/15+x**7/105+x**9/945)*np.exp(-x**2/2)/np.sqrt(2*np.pi)
 
+
+@numba.jit(nopython=True)
 def gfsk_mod(msg, sps, bt, mi):
     """
     GFSK modulator
@@ -57,9 +66,9 @@ def gfsk_mod(msg, sps, bt, mi):
     """
     msg = msg*2-1.0
     freq = upsample(msg, sps)
-    t = np.arange((-0.5+1/sps/2), 0.5, 1/sps) 
-    shape = norm.cdf(2*np.pi*bt*(t+0.5)/np.sqrt(np.log(2)))- \
-            norm.cdf(2*np.pi*bt*(t-0.5)/np.sqrt(np.log(2)))
+    t = np.arange((-0.5+1/sps/2), 0.5, 1/sps)
+    shape = norm_cdf(2*np.pi*bt*(t+0.5)/np.sqrt(np.log(2)))- \
+        norm_cdf(2*np.pi*bt*(t-0.5)/np.sqrt(np.log(2)))
     shape = shape/shape.sum()
     freq = np.convolve(freq, shape)
     freq = freq[:msg.size*sps]
