@@ -73,7 +73,7 @@ def gfsk_mod(msg, sps, bt, mi):
     shape = shape/shape.sum()
     shape = (np.ones((msg.size, 1))@np.expand_dims(shape, 0)).flatten()
     freq = freq*shape
-    phase = np.zeros_like(freq)
+    phase = np.zeros_like(freq)+2*np.pi*np.random.random()  # random init phase
     for idx in range(freq.size-1):
         phase[idx+1] = phase[idx] + mi*np.pi*freq[idx]
     return np.exp(1j*phase)
