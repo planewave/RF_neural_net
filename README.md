@@ -2,11 +2,12 @@
 
 For baseband wireless signal processing. A follow-up research of my thesis.
 Can be used for other complex-valued (CV) signal processing.
-Based on PyTorch framework.
+Based on PyTorch and Keras.
 
 Contributions are wellcomed.
 
 ## Objectives
+* Baseband signal parameter estimation using DL model
 * CV convolutional layers 
 * Activation, pooling etc. layers for CV neural networks
 * Scaleable and rotatable convolutional layers
@@ -14,6 +15,7 @@ Contributions are wellcomed.
 ## Current tasks
 - [x] CV-CNN layer building
 - [x] PSK, GFSK generator
+- [ ] GFSK signal parameter estimation
 - [ ] PSK, GFSK signal classifier with both RV-CNN and CV-CNN
 
 ## Reference
@@ -27,4 +29,7 @@ Planning to use capsule net brought by Hinton
 1. 研究复信号卷积网络的基础构架
 2. 研究如何处理复数时间序列特有的相位, 和采样率问题
 
+目前在探索信号参数估计的一些问题.
+
 欢迎交流合作
+
